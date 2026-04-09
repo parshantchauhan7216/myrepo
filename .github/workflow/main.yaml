@@ -1,0 +1,14 @@
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Build Docker Image
+      run: docker build -t myapp:${{ github.sha }} .
+
+    - name: Push to Registry
+      run: docker push myapp:${{ github.sha }}
+
+    - name: Update K8s Manifest
+      run: |
+        kubectl set image deployment/my-app-deploy \
+        container-name=myapp:${{ github.sha }}
